@@ -1,0 +1,3 @@
+# ignore directories
+build/*
+.DS_Store
