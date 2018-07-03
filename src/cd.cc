@@ -1,63 +1,54 @@
 #include <cstdint>
+#include <iostream>
 #include <vector>
-#include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
-
+#include <Eigen/Core>
 #include "pub_simpleLasso.h"
 
-namespace py = boost::python;
-namespace np = boost::python::numpy;
-
-np::ndarray addMatrix(const np::ndarray &X, const np::ndarray &Y)
+Eigen::MatrixXd addMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 {
     // 行列形状が不一致の場合は計算不可
-    if( X.get_shape() != Y.get_shape() ) {
+    if( ( X.rows() != Y.rows() ) ||
+        ( X.cols() != Y.cols() ) ) {
         throw std::runtime_error("shape error!");
     }
 
-    const py::tuple shape = py::make_tuple( X.get_shape() );
-    np::ndarray C = np::zeros( shape, np::dtype::get_builtin<double>() );
+    Eigen::MatrixXd C = Eigen::MatrixXd::Zero(X.rows(), X.cols());
 
-    for( auto i=0; i<X.shape(0); i++ ) {
-        for( auto j=0; j<X.shape(1); j++ ) {
-            C[i][j] = X[i][j] + Y[i][j];
+    for( auto i=0; i<X.rows(); i++ ) {
+        for( auto j=0; j<X.cols(); j++ ) {
+            C(i, j) = X(i, j) + Y(i, j);
         }
     }
 
     return C;
 }
 
-np::ndarray subMatrix(const np::ndarray &X, const np::ndarray &Y)
+Eigen::MatrixXd subMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 {
     // 行列形状が不一致の場合は計算不可
-    if( X.get_shape() != Y.get_shape() ) {
+    if( ( X.rows() != Y.rows() ) ||
+          X.cols() != Y.cols() ) {
         throw std::runtime_error("shape unmatch!!");
     }
 
-    const py::tuple shape = py::make_tuple( X.get_shape() );
-    np::ndarray C = np::zeros( shape, np::dtype::get_builtin<double>() );
+    Eigen::MatrixXd C = Eigen::MatrixXd::Zero(X.rows(), X.cols());
 
-    for(auto i=0; i<X.shape(0); i++) {
-        for(auto j=0; j<X.shape(1); j++) {
-            C[i][j] = X[i][j] - Y[i][j];
+    for(auto i=0; i<X.rows(); i++) {
+        for(auto j=0; j<X.cols(); j++) {
+            C(i, j) = X(i, j) - Y(i, j);
         }
     }
 
     return C;
 }
 
-np::ndarray dotMatrix(const np::ndarray &X, const np::ndarray &Y)
+Eigen::MatrixXd dotMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 {
-    if( (X.get_nd() > 2) || (Y.get_nd() > 2) ) {
-        // とりあえず二次元までしか対応しない
-        throw std::runtime_error("dimention error!!");
-    }
-
     // 入力行列の行数と列数を取得
-    auto rowX = X.shape(0);
-    auto rowY = Y.shape(0);
-    auto colX = X.shape(1);
-    auto colY = Y.shape(1);
+    auto rowX = X.rows();
+    auto rowY = Y.rows();
+    auto colX = X.cols();
+    auto colY = Y.cols();
 
     // Xの列数とYの行数が合わない場合は計算不可
     if( colX != rowY ) {
@@ -65,71 +56,53 @@ np::ndarray dotMatrix(const np::ndarray &X, const np::ndarray &Y)
     }
 
     // 行列積の結果は左の行数と右の列数の要素が定義される
-    const py::tuple shape = py::make_tuple(rowX, colY);
-    np::ndarray C = np::zeros(shape, np::dtype::get_builtin<double>() );
-
+    Eigen::MatrixXd C = Eigen::MatrixXd::Zero(rowX, colY);
     for(auto i=0; i<rowX; i++) {
+
         // X[i]行の成分を取り出す
-        std::vector<double> vecX = getVectorByndarray(X, i, 0);
+        std::vector<double> vecX = getVector(X, i, GET_VECTOR_TYPE_ROW);
+        // std::cout << "vec X :";
+        // printVector(vecX);
 
         for(auto j=0; j<colY; j++) {
+
             // Y[j]列の成分を取り出す
-            std::vector<double> vecY = getVectorByndarray(Y, j, 1);
+            std::vector<double> vecY = getVector(Y, j, GET_VECTOR_TYPE_COL);
+            // std::cout << "vec Y :";
+            // printVector(vecY);
+
 
             // 行列積[i][j]の成分はX[i]行とY[j]列のベクトル内積と等しい
-            C[i][j] = innerProduct(vecX, vecY);
+
+             double prod = innerProduct(vecX, vecY);
+            //  std::cout << "(i, j) :" << i << "," << j << "prod: " << prod << std::endl;
+             C(i, j) = prod;
         }
     }
 
     return C;
 }
 
-std::vector<double> getVectorByndarray(const np::ndarray &X, int32_t offset, int32_t getType)
+std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorType_t getType)
 {
     std::vector<double> v;
+    size_t rows = X.rows(), cols = X.cols();
 
-    if( getType == 0 ) {
-        // pick row
-        for(int32_t i=0; i<X.shape(0); i++) {
-            v.push_back( py::extract<double>(X[offset][i]) );
+    if( getType == GET_VECTOR_TYPE_COL ) {
+        // pick column
+        for(int32_t i=0; i<rows; i++) {
+            v.push_back( X(i, idx) );
         }
 
     } else {
-        // pick column
-        for(int32_t i=0; i<X.shape(1); i++) {
-            v.push_back( py::extract<double>(X[i][offset]) );
+        // pick row
+        for(int32_t i=0; i<cols; i++) {
+            v.push_back( X(idx, i) );
         }
     }
 
     return v;
 }
-#if 0
-np::ndarray getSignMatrix(const np::ndarray &X)
-{
-    const py::tuple shape = py::make_tuple( X.get_shape() );
-    np::ndarray signArray = np::zeros( shape, np::dtype::get_builtin<double>() );
-
-    for( auto i=0; i<signArray.shape(0); i++ ) {
-        for( auto j=0; j<signArray.shape(1); j++ ) {
-            
-            auto elemX = X[i][j];
-            auto &e = signArray[i][j];
-
-            if( elemX > 0 ) {
-                e = 1;
-
-            } else if( elemX < 0 ) {
-                e = -1;
-
-            } else {
-                e = 0;
-            }
-        }
-   }
-
-   return signArray;
-}
-#endif
 
 double innerProduct(const std::vector<double> &X, const std::vector<double> &Y)
 {
@@ -138,8 +111,18 @@ double innerProduct(const std::vector<double> &X, const std::vector<double> &Y)
         throw std::runtime_error("size error!");
     }
 
-    for( auto i : X ) {
-        sum += X[i] * Y[i];
+    // std::cout << "X: ";
+    // PRINT_VEC( const_cast<std::vector<double> &>(X) );
+
+    // std::cout << "Y: ";
+    // PRINT_VEC( const_cast<std::vector<double> &>(Y) );
+
+    for( auto i=0; i<X.size(); i++ ) {
+        // std::cout << "sum: " << sum << std::endl;
+        // std::cout << "X: " << X[i] << "Y: " << Y[i] << std::endl;
+        double mul = X[i] * Y[i];
+        // std::cout << "mul: " << mul << std::endl;
+        sum += mul;
     }
 
     return sum;
@@ -155,37 +138,29 @@ double softThreshold( double val, double thresh )
     }
 }
 
-np::ndarray coordinateDescent( np::ndarray X, np::ndarray Y, double alpha, int32_t nIterate )
+Eigen::MatrixXd coordinateDescent( Eigen::MatrixXd X, Eigen::MatrixXd Y, double alpha, int32_t nIterate )
 {
-    const int32_t sampleNum   = X.shape(0);     // Column : サンプル数
-    const int32_t featureNum  = X.shape(1);     // Row    : 特徴量
+    const int32_t sampleNum   = X.rows();     // Column : サンプル数
+    const int32_t featureNum  = X.cols();     // Row    : 特徴量
 
     // 重みを初期化
-    py::tuple shape = py::make_tuple(0, featureNum);
-    np::ndarray weight = np::zeros( shape, np::dtype::get_builtin<double>() );
-    np::ndarray r_j    = np::zeros( shape, np::dtype::get_builtin<double>() );
+    Eigen::VectorXd weight  = Eigen::VectorXd::Zero(featureNum);
+    Eigen::VectorXd r_j     = Eigen::VectorXd::Zero(featureNum);
 
     for( auto i=0; i<nIterate; i++ ) {
         for( auto j=0; j<featureNum; j++ ) {
-            weight[j] = 0.0;
+            weight(j) = 0.0;
 
-            np::ndarray dotXw = dotMatrix(X, weight);
-            np::ndarray r_j = subMatrix(Y, dotXw);
+            Eigen::MatrixXd dotXw = dotMatrix(X, weight);
+            Eigen::MatrixXd r_j = subMatrix(Y, dotXw);
 
-            std::vector<double> vecX    = getVectorByndarray(X, j, 1);
-            std::vector<double> vecR_j  = getVectorByndarray(r_j, 0, 0);
+            std::vector<double> vecX    = getVector(X,  j, GET_VECTOR_TYPE_COL);
+            std::vector<double> vecR_j  = getVector(r_j, 0, GET_VECTOR_TYPE_ROW);
 
             double prod     = innerProduct(vecX, vecR_j) / sampleNum;
             double retVal   = softThreshold(prod, alpha);
-            weight[j] = 1.0;
+            weight(j) = 1.0;
         }
     }
     return weight;
-}
-
-BOOST_PYTHON_MODULE(myCoodinateDescent)
-{
-    Py_Initialize();
-    np::initialize();
-    py::def("my_coordinate_descent", coordinateDescent);
 }

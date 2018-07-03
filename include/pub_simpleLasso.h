@@ -4,19 +4,31 @@
 // Include headers
 #include <cstdint>
 #include <vector>
+#include <Eigen/Core>
 
-namespace boost { namespace python { namespace numpy {
-    class ndarray;
-} } }   // namespace boost::python::numpy
+typedef enum {
+    GET_VECTOR_TYPE_COL = 0,
+    GET_VECTOR_TYPE_ROW,
+} GetVectorType_t;
 
 // Prototypes
-boost::python::numpy::ndarray subMatrix( const boost::python::numpy::ndarray &X, const boost::python::numpy::ndarray &Y );
-boost::python::numpy::ndarray addMatrix( const boost::python::numpy::ndarray &X, const boost::python::numpy::ndarray &Y );
-boost::python::numpy::ndarray dotMatrix( const boost::python::numpy::ndarray &X, const boost::python::numpy::ndarray &Y );
-boost::python::numpy::ndarray coordinateDescent( boost::python::numpy::ndarray X, boost::python::numpy::ndarray Y, double alpha, int32_t nIterate );
-std::vector<double> getVectorByndarray( const boost::python::numpy::ndarray &X, int32_t offset, int32_t getType );
-double innerProduct(const std::vector<double> &X, const std::vector<double> &Y);
+Eigen::MatrixXd subMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
+Eigen::MatrixXd addMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
+Eigen::MatrixXd dotMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
+Eigen::MatrixXd coordinateDescent( Eigen::MatrixXd X, Eigen::MatrixXd Y, double alpha, int32_t nIterate );
+std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorType_t getType );
+double innerProduct( const std::vector<double> &X, const std::vector<double> &Y );
 double softThreshold( double val, double thresh );
-inline int32_t getSign(double val){ return (val > 0) - (val < 0); }
+inline int32_t getSign( double val )
+{
+    return (val > 0) - (val < 0);
+}
+inline void printVector( std::vector<double> &vec)
+{
+    for( auto i : vec ) {
+        std::cout << i << ' ';
+    }
 
+    std::cout << std::endl;
+}
 #endif  /* SIMPLELASSO_H */
