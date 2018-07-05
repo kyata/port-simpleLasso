@@ -27,7 +27,7 @@ Eigen::MatrixXd subMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 {
     // 行列形状が不一致の場合は計算不可
     if( ( X.rows() != Y.rows() ) ||
-          X.cols() != Y.cols() ) {
+        ( X.cols() != Y.cols() ) ) {
         throw std::runtime_error("shape unmatch!!");
     }
 
@@ -140,42 +140,42 @@ double softThreshold( double val, double thresh )
     }
 }
 
-Eigen::MatrixXd coordinateDescent( Eigen::MatrixXd X, Eigen::MatrixXd Y, double alpha, int32_t nIterate )
+Eigen::MatrixXd coordinateDescent(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y, double alpha, int32_t nIterate)
 {
     const int32_t sampleNum   = X.rows();     // Column : サンプル数
     const int32_t featureNum  = X.cols();     // Row    : 特徴量
-    
-    std::cout << "X:" << X << std::endl;
-    std::cout << "Y:" << Y << std::endl;
+
+    // std::cout << "X:" << X << std::endl;
+    // std::cout << "Y:" << Y << std::endl;
 
     // 重みを初期化
     Eigen::VectorXd weight  = Eigen::VectorXd::Zero(featureNum);
     Eigen::VectorXd r_j     = Eigen::VectorXd::Zero(featureNum);
-
     for( auto i=0; i<nIterate; i++ ) {
         for( auto j=0; j<featureNum; j++ ) {
             weight(j) = 0.0;
 
             Eigen::MatrixXd dotXw = dotMatrix(X, weight);
             Eigen::MatrixXd r_j = subMatrix(Y, dotXw);
-            
-            std::cout << "dotXw: = [" << std::endl << dotXw << "]" << std::endl;
-            std::cout << "r_j  : = [" << std::endl << r_j   << "]" << std::endl;
-            
+
+            // std::cout << "dotXw: = [" << std::endl << dotXw << "]" << std::endl;
+            // std::cout << "r_j  : = [" << std::endl << r_j   << "]" << std::endl;
 
             std::vector<double> vecX    = getVector(X,  j, GET_VECTOR_TYPE_COL);
             std::vector<double> vecR_j  = getVector(r_j, 0, GET_VECTOR_TYPE_COL);
-            
+#if 0
             std::cout << "vecX: ";
             printVector(vecX);
 
             std::cout << "vecR_j: ";
             printVector(vecR_j);
-
+#endif
             double prod     = innerProduct(vecX, vecR_j) / sampleNum;
             double retVal   = softThreshold(prod, alpha);
             weight(j)       = retVal;
         }
     }
+
+    // std::cout << "weight = [ " << std::endl << weight << "]" << std::endl;
     return weight;
 }

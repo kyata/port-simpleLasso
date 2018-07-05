@@ -14,9 +14,11 @@ int main(int argc, char **argv)
     Eigen::VectorXd w = Eigen::VectorXd::Ones(n_features);
     Eigen::MatrixXd wp = Eigen::MatrixXd::Zero(n_samples, n_features);
 
+    autonum = 0;
     for(int32_t i=0; i<n_samples; i++) {
         for(int32_t j=0; j<n_features; j++) {
-            X(i, j) = (i+1)*(j+1);
+            X(i, j) = num;
+            num++;
         }
     }
     X = X / 100;

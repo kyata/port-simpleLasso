@@ -6,9 +6,6 @@
 // #include <boost/python/numpy.hpp>
 #include "pub_simpleLasso.h"
 
-// データ表示用マクロ
-#define PRINT_MAT(X) (std::cout << #X << ":\n" << X << std::endl << std::endl)
-
 // namespace py boost::python;
 // namespace np boost::numpy;
 

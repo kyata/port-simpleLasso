@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 # find_package(PythonLibs 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+# Debug Build
+set(CMAKE_BUILD_TYPE Debug)
+
 # include path settings
 set(INCLUDE_DIR
     ${PROJECT_SOURCE_DIR}/include
@@ -27,10 +30,8 @@ add_library(simpleLasso STATIC
     # ${PYTHON_LIBRARY}
 )
 
-# add_executable( main main.cc )
+add_executable(main main.cc)
+target_link_libraries(main simpleLasso)
 
 # Debug
-message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
-message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
-message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
+set(CMAKE_BUILD_TYPE Debug)
