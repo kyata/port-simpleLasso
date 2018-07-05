@@ -61,21 +61,21 @@ Eigen::MatrixXd dotMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 
         // X[i]行の成分を取り出す
         std::vector<double> vecX = getVector(X, i, GET_VECTOR_TYPE_ROW);
-        // std::cout << "vec X :";
-        // printVector(vecX);
+        std::cout << "vec X :";
+        printVector(vecX);
 
         for(auto j=0; j<colY; j++) {
 
             // Y[j]列の成分を取り出す
             std::vector<double> vecY = getVector(Y, j, GET_VECTOR_TYPE_COL);
-            // std::cout << "vec Y :";
-            // printVector(vecY);
+            std::cout << "vec Y :";
+            printVector(vecY);
 
 
             // 行列積[i][j]の成分はX[i]行とY[j]列のベクトル内積と等しい
 
              double prod = innerProduct(vecX, vecY);
-            //  std::cout << "(i, j) :" << i << "," << j << "prod: " << prod << std::endl;
+             std::cout << "(i, j) :" << i << "," << j << "prod: " << prod << std::endl;
              C(i, j) = prod;
         }
     }
@@ -107,6 +107,8 @@ std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorTy
 double innerProduct(const std::vector<double> &X, const std::vector<double> &Y)
 {
     double sum = 0;
+    std::cout << "x.size " << X.size() << " y.size " << Y.size() << std::endl;
+    
     if( X.size() != Y.size() ) {
         throw std::runtime_error("size error!");
     }
@@ -142,6 +144,9 @@ Eigen::MatrixXd coordinateDescent( Eigen::MatrixXd X, Eigen::MatrixXd Y, double 
 {
     const int32_t sampleNum   = X.rows();     // Column : サンプル数
     const int32_t featureNum  = X.cols();     // Row    : 特徴量
+    
+    std::cout << "X:" << X << std::endl;
+    std::cout << "Y:" << Y << std::endl;
 
     // 重みを初期化
     Eigen::VectorXd weight  = Eigen::VectorXd::Zero(featureNum);
@@ -153,13 +158,23 @@ Eigen::MatrixXd coordinateDescent( Eigen::MatrixXd X, Eigen::MatrixXd Y, double 
 
             Eigen::MatrixXd dotXw = dotMatrix(X, weight);
             Eigen::MatrixXd r_j = subMatrix(Y, dotXw);
+            
+            std::cout << "dotXw: = [" << std::endl << dotXw << "]" << std::endl;
+            std::cout << "r_j  : = [" << std::endl << r_j   << "]" << std::endl;
+            
 
             std::vector<double> vecX    = getVector(X,  j, GET_VECTOR_TYPE_COL);
-            std::vector<double> vecR_j  = getVector(r_j, 0, GET_VECTOR_TYPE_ROW);
+            std::vector<double> vecR_j  = getVector(r_j, 0, GET_VECTOR_TYPE_COL);
+            
+            std::cout << "vecX: ";
+            printVector(vecX);
+
+            std::cout << "vecR_j: ";
+            printVector(vecR_j);
 
             double prod     = innerProduct(vecX, vecR_j) / sampleNum;
             double retVal   = softThreshold(prod, alpha);
-            weight(j) = 1.0;
+            weight(j)       = retVal;
         }
     }
     return weight;
