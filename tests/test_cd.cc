@@ -8,7 +8,7 @@ public:
     const int32_t kFeatures;     // 特徴量 列
 
 protected:
-    TestSimpleLasso() : kSamples(100), kFeatures(100) {}
+    TestSimpleLasso() : kSamples(100), kFeatures(1000) {}
     virtual void SetUp()
     {
         lhs_ = Eigen::MatrixXd::Random(kSamples, kFeatures);
@@ -59,7 +59,7 @@ TEST_F(TestSimpleLasso, addMatrixTest)
     Eigen::MatrixXd C = addMatrix(lhs_, rhs_);
     Eigen::MatrixXd CC = lhs_ + rhs_;
 
-    EXPECT_EQ(C, CC);
+    EXPECT_TRUE( CC.isApprox(C) );
 }
 
 TEST_F(TestSimpleLasso, subMatrixTest)
@@ -67,13 +67,13 @@ TEST_F(TestSimpleLasso, subMatrixTest)
     Eigen::MatrixXd C = subMatrix(lhs_, rhs_);
     Eigen::MatrixXd CC = lhs_ - rhs_;
 
-    EXPECT_EQ(C, CC);
+    EXPECT_TRUE( CC.isApprox(C) );
 }
 
 TEST_F(TestSimpleLasso, dotMatrixTest)
 {
-    Eigen::MatrixXd C = dotMatrix(lhs_, rhs_);
-    Eigen::MatrixXd CC = lhs_ * rhs_;
+    Eigen::MatrixXd C = dotMatrix(lhs_, rhs_.transpose());
+    Eigen::MatrixXd CC = lhs_ * rhs_.transpose();
 
-    EXPECT_EQ(C, CC);
+    EXPECT_TRUE( CC.isApprox(C) );
 }
