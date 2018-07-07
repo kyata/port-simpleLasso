@@ -1,13 +1,5 @@
-#include <random>
-#include <iostream>
-#include <cstdio>
 #include "gtest/gtest.h"
-// #include <boost/python.hpp>
-// #include <boost/python/numpy.hpp>
 #include "pub_simpleLasso.h"
-
-// namespace py boost::python;
-// namespace np boost::numpy;
 
 class TestSimpleLasso : public ::testing::Test
 {
@@ -19,15 +11,11 @@ protected:
     TestSimpleLasso() : kSamples(100), kFeatures(100) {}
     virtual void SetUp()
     {
-        // Py_Initialize();
-        // np::initialize();
         lhs_ = Eigen::MatrixXd::Random(kSamples, kFeatures);
         rhs_ = Eigen::MatrixXd::Random(kSamples, kFeatures);
     }
 
-    virtual void TearDown()
-    {
-    }
+    virtual void TearDown() {}
 
     Eigen::MatrixXd lhs_;   // 検算用ダミー行列
     Eigen::MatrixXd rhs_;   // 検算用ダミー行列
@@ -47,20 +35,11 @@ TEST_F(TestSimpleLasso, innerProductTest)
     };
 
     double prod = innerProduct(vec, vec);
-    std::cout << "innnerProduct : " << prod << std::endl;
     EXPECT_EQ(285.0, prod);
 }
 
 TEST_F(TestSimpleLasso, getVectorTest)
 {
-#if 0
-    Eigen::MatrixXd lhs(5, 5);
-    lhs <<  1, 2, 3, 4, 5,
-            1, 2, 3, 4, 5,
-            1, 2, 3, 4, 5,
-            1, 2, 3, 4, 5,
-            1, 2, 3, 4, 5;
-#endif
     int32_t idx = 2;
 
     std::vector<double> vec1 = getVector(lhs_, idx, GET_VECTOR_TYPE_COL);
@@ -77,47 +56,24 @@ TEST_F(TestSimpleLasso, getVectorTest)
 
 TEST_F(TestSimpleLasso, addMatrixTest)
 {
-    Eigen::MatrixXd lhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-    Eigen::MatrixXd rhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-
-    Eigen::MatrixXd C = addMatrix(lhs, rhs);
-    Eigen::MatrixXd CC = lhs + rhs;
+    Eigen::MatrixXd C = addMatrix(lhs_, rhs_);
+    Eigen::MatrixXd CC = lhs_ + rhs_;
 
     EXPECT_EQ(C, CC);
 }
 
 TEST_F(TestSimpleLasso, subMatrixTest)
 {
-    Eigen::MatrixXd lhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-    Eigen::MatrixXd rhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-
-    Eigen::MatrixXd C = subMatrix(lhs, rhs);
-    Eigen::MatrixXd CC = lhs - rhs;
+    Eigen::MatrixXd C = subMatrix(lhs_, rhs_);
+    Eigen::MatrixXd CC = lhs_ - rhs_;
 
     EXPECT_EQ(C, CC);
 }
 
 TEST_F(TestSimpleLasso, dotMatrixTest)
 {
-    Eigen::MatrixXd lhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-    Eigen::MatrixXd rhs = Eigen::MatrixXd::Random(kSamples, kFeatures);
-#if 0
-    Eigen::MatrixXd lhs(5, 5);
-    Eigen::MatrixXd rhs(5, 5);
-    lhs << 1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5;
-
-    rhs << 1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5,
-           1, 2, 3, 4, 5;
-#endif
-    Eigen::MatrixXd C = dotMatrix(lhs, rhs);
-    Eigen::MatrixXd CC = lhs * rhs;
+    Eigen::MatrixXd C = dotMatrix(lhs_, rhs_);
+    Eigen::MatrixXd CC = lhs_ * rhs_;
 
     EXPECT_EQ(C, CC);
 }
