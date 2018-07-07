@@ -12,18 +12,18 @@ typedef enum {
 } GetVectorType_t;
 
 // Prototypes
-Eigen::MatrixXd subMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
-Eigen::MatrixXd addMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
-Eigen::MatrixXd dotMatrix( const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y );
+Eigen::MatrixXd subMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
+Eigen::MatrixXd addMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
+Eigen::MatrixXd dotMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
 Eigen::MatrixXd coordinateDescent(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y, double alpha, int32_t nIterate);
-std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorType_t getType );
-double innerProduct( const std::vector<double> &X, const std::vector<double> &Y );
-double softThreshold( double val, double thresh );
-inline int32_t getSign( double val )
+std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorType_t getType);
+double innerProduct(const std::vector<double> &X, const std::vector<double> &Y);
+double softThreshold(double val, double thresh);
+inline int32_t getSign(double val)
 {
     return (val > 0) - (val < 0);
 }
-inline void printVector( std::vector<double> &vec)
+inline void printVector(std::vector<double> &vec)
 {
     for( auto i : vec ) {
         std::cout << i << ' ';
