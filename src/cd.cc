@@ -61,22 +61,20 @@ Eigen::MatrixXd dotMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y)
 
         // X[i]行の成分を取り出す
         std::vector<double> vecX = getVector(X, i, GET_VECTOR_TYPE_ROW);
-        std::cout << "vec X :";
-        printVector(vecX);
+        // std::cout << "vec X :";
+        // printVector(vecX);
 
         for(auto j=0; j<colY; j++) {
 
             // Y[j]列の成分を取り出す
             std::vector<double> vecY = getVector(Y, j, GET_VECTOR_TYPE_COL);
-            std::cout << "vec Y :";
-            printVector(vecY);
-
+            // std::cout << "vec Y :";
+            // printVector(vecY);
 
             // 行列積[i][j]の成分はX[i]行とY[j]列のベクトル内積と等しい
-
-             double prod = innerProduct(vecX, vecY);
-             std::cout << "(i, j) :" << i << "," << j << "prod: " << prod << std::endl;
-             C(i, j) = prod;
+            double prod = innerProduct(vecX, vecY);
+            //std::cout << "(i, j) :" << i << "," << j << "prod: " << prod << std::endl;
+            C(i, j) = prod;
         }
     }
 
@@ -107,8 +105,8 @@ std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorTy
 double innerProduct(const std::vector<double> &X, const std::vector<double> &Y)
 {
     double sum = 0;
-    std::cout << "x.size " << X.size() << " y.size " << Y.size() << std::endl;
-    
+    // std::cout << "x.size " << X.size() << " y.size " << Y.size() << std::endl;
+
     if( X.size() != Y.size() ) {
         throw std::runtime_error("size error!");
     }
