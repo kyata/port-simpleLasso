@@ -5,11 +5,11 @@
 
 int main(int argc, char **argv)
 {
-    const int32_t n_iter            = 1;
+    const int32_t n_iter            = 10;
     const int32_t n_samples         = 100;
     const int32_t n_features        = 1000;
     const int32_t n_nonzero_coefs   = 20;
-    const double alpha = 1.0;
+    const double alpha              = 0.6;
 
     std::random_device seed;
     std::mt19937 mt( seed() );
