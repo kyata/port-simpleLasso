@@ -15,7 +15,7 @@ typedef enum {
 Eigen::MatrixXd subMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
 Eigen::MatrixXd addMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
 Eigen::MatrixXd dotMatrix(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y);
-Eigen::MatrixXd coordinateDescent(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y, double alpha, int32_t nIterate);
+Eigen::MatrixXd coordinateDescent(const Eigen::MatrixXd &X, const Eigen::MatrixXd &Y, double alpha = 1.0, int32_t nIterate = 1000);
 std::vector<double> getVector(const Eigen::MatrixXd &X, int32_t idx, GetVectorType_t getType);
 double innerProduct(const std::vector<double> &X, const std::vector<double> &Y);
 double softThreshold(double val, double thresh);
