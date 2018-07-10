@@ -52,10 +52,10 @@ int main(int argc, char **argv)
     Eigen::MatrixXd w_pred = coordinateDescent(X, y, alpha, n_iter);
 
     std::cout << "Number of nonzero coefficiennts (true) : "
-        << w.sum() << std::endl;
+        << (w.array() != 0).count() << std::endl;
 
     std::cout << "Number of nonzero coefficiennts (predicted) : "
-        << w_pred.sum() << std::endl;
+        << (w_pred.array() != 0).count() << std::endl;
 
     std::cout << "Euclidean distance between coefficients : "
         << (w - w_pred).norm() << std::endl;
